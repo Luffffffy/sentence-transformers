@@ -16,8 +16,7 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
 #### /print debug information to stdout
 
 ################# Download AskUbuntu and extract training corpus  #################
-askubuntu_folder = 'askubuntu'
-training_corpus = os.path.join(askubuntu_folder, 'train.unsupervised.txt')
+askubuntu_folder = 'data/askubuntu'
 result_folder = 'output/askubuntu-tsdae-'+datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 batch_size = 8
 
@@ -69,16 +68,14 @@ for id, sentence in corpus.items():
     if id not in dev_test_ids:
         train_sentences.append(sentence)
 
+
 logging.info("{} train sentences".format(len(train_sentences)))
 
 ################# Intialize an SBERT model #################
-model_name = sys.argv[1] if len(sys.argv) >= 2 else 'bert-base-uncased'  # could also be 'distilbert-base-uncased'
+model_name = sys.argv[1] if len(sys.argv) >= 2 else 'bert-base-uncased'
 word_embedding_model = models.Transformer(model_name)
 # Apply **cls** pooling to get one fixed sized sentence vector
-pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
-                               pooling_mode_mean_tokens=False,
-                               pooling_mode_cls_token=True,
-                               pooling_mode_max_tokens=False)
+pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(), 'cls')
 model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
 
 ################# Train and evaluate the model (it needs about 1 hour for one epoch of AskUbuntu) #################
@@ -94,7 +91,6 @@ logging.info("Dev performance before training")
 dev_evaluator(model)
 
 total_steps = 20000
-
 logging.info("Start training")
 model.fit(
     train_objectives=[(train_dataloader, train_loss)],
