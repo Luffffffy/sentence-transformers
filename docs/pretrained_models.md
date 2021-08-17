@@ -11,7 +11,9 @@ Alternatively, you can download and unzip them from [here](https://public.ukp.in
 
 ## Sentence Embedding Models
 
-The following models have been tuned to embed sentences and short paragraphs. The **paraphrase-MiniLM-L6-v2** model offers a great trade-off between performance and speed. 
+The following models have been tuned to embed sentences and short paragraphs up to a length of 128 word pieces.
+
+Use **paraphrase-mpnet-base-v2** for the best quality, and **paraphrase-MiniLM-L6-v2** if you want a quick model with high quality.
 
 
 <iframe src="../_static/html/models_en_sentence_embeddings.html" height="500" style="width:100%; border:none;" title="Iframe Example"></iframe>
@@ -22,12 +24,12 @@ The following models have been tuned to embed sentences and short paragraphs. Th
 The following models were trained on [MSMARCO Passage Ranking](https://github.com/microsoft/MSMARCO-Passage-Ranking), a dataset with 500k real queries from Bing search. Given a search query, find the relevant passages. 
 
 Models tuned to be used with **cosine-similarity**:
-- **msmarco-distilbert-base-v3**: MRR@10: 33.13 on MS MARCO  dev set
+- **msmarco-distilbert-base-v4**: MRR@10: 33.79 on MS MARCO  dev set
 
 Models tuned to be used with **dot-product**:
 - **msmarco-distilbert-base-dot-prod-v3**: MRR@10: 33.04 on MS MARCO dev set
 - **msmarco-distilbert-base-tas-b**: MRR@10: 34.43 on MS MARCO dev set
-- **msmarco-roberta-base-ance-fristp**: MRR@10: 33.03 on MS MARCO  dev set
+- **msmarco-roberta-base-ance-firstp**: MRR@10: 33.03 on MS MARCO  dev set
 
 
 Models tuned for cosine-similarity will prefer the retrieval of short documents, while models tuned for dot-product will prefer the retrieval of longer documents. Depending on your task, the models of the one or the other type are preferable.
@@ -94,6 +96,8 @@ These models find semantically similar sentences within one language or across l
 - **stsb-xlm-r-multilingual**: Produces similar embeddings as the *stsb-bert-base* model. Trained on parallel data for 50+ languages.
 - **quora-distilbert-multilingual** - Multilingual version of *quora-distilbert-base*.  Fine-tuned with parallel data for 50+ languages. 
 - **T-Systems-onsite/cross-en-de-roberta-sentence-transformer** - Multilingual model for English an German. [[More]](https://huggingface.co/T-Systems-onsite/cross-en-de-roberta-sentence-transformer)
+- **paraphrase-multilingual-MiniLM-L12-v2** - Multilingual version of *paraphrase-MiniLM-L12-v2*, trained on parallel data for 50+ languages. 
+- **paraphrase-multilingual-mpnet-base-v2** - Multilingual version of *paraphrase-mpnet-base-v2*, trained on parallel data for 50+ languages. 
 
 **Bitext Mining** 
 
