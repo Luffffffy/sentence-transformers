@@ -172,7 +172,7 @@ Loading trained models is easy. You can specify a path:
 ```python
 model = SentenceTransformer('./my/path/to/model/')
 ```
-Note: It is important that a / or \ is the path, otherwise, it is not recognized as a path.
+Note: It is important that a / or \ is present in the path, otherwise, it is not recognized as a path.
 
 You can also host the training output on a server and download it:
  ```python
@@ -188,7 +188,7 @@ This code allows multi-task learning with training data from different datasets 
 
 ## Adding Special Tokens
 
-Depending on the task, you might want to special tokens to the tokenizer and the Transformer model. You can use the following code-snippet to achieve this:
+Depending on the task, you might want to add special tokens to the tokenizer and the Transformer model. You can use the following code-snippet to achieve this:
 ```python
 from sentence_transformers import SentenceTransformer, models
 word_embedding_model = models.Transformer('bert-base-uncased')
@@ -204,7 +204,7 @@ model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
 If you want to extend the vocabulary for an existent SentenceTransformer model, you can use the following code:
 ```python
 from sentence_transformers import SentenceTransformer, models
-model = SentenceTransformer('paraphrase-distilroberta-base-v1')
+model = SentenceTransformer('all-MiniLM-L6-v2')
 word_embedding_model = model._first_module()
 
 tokens = ["[DOC]", "[QRY]"]
