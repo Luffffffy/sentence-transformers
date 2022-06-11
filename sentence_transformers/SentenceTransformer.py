@@ -38,8 +38,14 @@ class SentenceTransformer(nn.Sequential):
     :param modules: This parameter can be used to create custom SentenceTransformer models from scratch.
     :param device: Device (like 'cuda' / 'cpu') that should be used for computation. If None, checks if a GPU can be used.
     :param cache_folder: Path to store models
+    :param use_auth_token: HuggingFace authentication token to download private models.
     """
-    def __init__(self, model_name_or_path: Optional[str] = None, modules: Optional[Iterable[nn.Module]] = None, device: Optional[str] = None, cache_folder: Optional[str] = None):
+    def __init__(self, model_name_or_path: Optional[str] = None,
+                 modules: Optional[Iterable[nn.Module]] = None,
+                 device: Optional[str] = None,
+                 cache_folder: Optional[str] = None,
+                 use_auth_token: Union[bool, str, None] = None
+                 ):
         self._model_card_vars = {}
         self._model_card_text = None
         self._model_config = {}
@@ -81,7 +87,8 @@ class SentenceTransformer(nn.Sequential):
                                     cache_dir=cache_folder,
                                     library_name='sentence-transformers',
                                     library_version=__version__,
-                                    ignore_files=['flax_model.msgpack', 'rust_model.ot', 'tf_model.h5'])
+                                    ignore_files=['flax_model.msgpack', 'rust_model.ot', 'tf_model.h5'],
+                                    use_auth_token=use_auth_token)
 
             if os.path.exists(os.path.join(model_path, 'modules.json')):    #Load as SentenceTransformer model
                 modules = self._load_sbert_model(model_path)
@@ -459,7 +466,7 @@ class SentenceTransformer(nn.Sequential):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             # First create the repo (and clone its content if it's nonempty).
-            logging.info("Create repository and clone it if it exists")
+            logger.info("Create repository and clone it if it exists")
             repo = Repository(tmp_dir, clone_from=repo_url)
 
             # If user provides local files, copy them.
@@ -480,10 +487,10 @@ class SentenceTransformer(nn.Sequential):
                         large_files.append(rel_path)
 
             if len(large_files) > 0:
-                logging.info("Track files with git lfs: {}".format(", ".join(large_files)))
+                logger.info("Track files with git lfs: {}".format(", ".join(large_files)))
                 repo.lfs_track(large_files)
 
-            logging.info("Push model to the hub. This might take a while")
+            logger.info("Push model to the hub. This might take a while")
             push_return = repo.push_to_hub(commit_message=commit_message)
 
             def on_rm_error(func, path, exc_info):
@@ -501,7 +508,7 @@ class SentenceTransformer(nn.Sequential):
                 for f in os.listdir(tmp_dir):
                     shutil.rmtree(os.path.join(tmp_dir, f), onerror=on_rm_error)
             except Exception as e:
-                logging.warning("Error when deleting temp folder: {}".format(str(e)))
+                logger.warning("Error when deleting temp folder: {}".format(str(e)))
                 pass
 
 
@@ -561,7 +568,7 @@ class SentenceTransformer(nn.Sequential):
             steps_per_epoch = None,
             scheduler: str = 'WarmupLinear',
             warmup_steps: int = 10000,
-            optimizer_class: Type[Optimizer] = transformers.AdamW,
+            optimizer_class: Type[Optimizer] = torch.optim.AdamW,
             optimizer_params : Dict[str, object]= {'lr': 2e-5},
             weight_decay: float = 0.01,
             evaluation_steps: int = 0,
@@ -786,7 +793,7 @@ class SentenceTransformer(nn.Sequential):
         """
         Creates a simple Transformer + Mean Pooling model and returns the modules
         """
-        logging.warning("No sentence-transformers model found with name {}. Creating a new one with MEAN pooling.".format(model_name_or_path))
+        logger.warning("No sentence-transformers model found with name {}. Creating a new one with MEAN pooling.".format(model_name_or_path))
         transformer_model = Transformer(model_name_or_path)
         pooling_model = Pooling(transformer_model.get_word_embedding_dimension(), 'mean')
         return [transformer_model, pooling_model]
@@ -875,7 +882,7 @@ class SentenceTransformer(nn.Sequential):
     @tokenizer.setter
     def tokenizer(self, value):
         """
-        Property to set the tokenizer that is should used by this model
+        Property to set the tokenizer that should be used by this model
         """
         self._first_module().tokenizer = value
 
